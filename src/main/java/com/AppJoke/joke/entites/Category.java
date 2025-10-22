@@ -29,10 +29,10 @@ public class Category implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name="category_type", nullable = false, length = 50)
-    private String categoryType;
+    @Column(name="category_name", unique=true, nullable = false, length = 50)
+    private String categoryName;
 
-    @OneToMany(mappedBy = "category")
+    @OneToMany(mappedBy = "category" )
     private List<Joke> jokes;
 
 }
