@@ -44,4 +44,23 @@ public class CategoryService {
             .collect(Collectors.toList());
     }
 
+    public CategoryDto getCategoryByName(String categoryName){
+        log.info("Getting Category by Name: {}", categoryName);
+        return CategoryMapper.toDto(categoryRepository.findByCategoryName(categoryName)
+            .orElseThrow(() -> new RuntimeException("Category not found with name: " + categoryName)));
+    }
+
+    public CategoryDto updateCategory(Long id, CategoryDto categoryDto) {
+        if(id == null) {
+            throw new IllegalArgumentException("Category ID cannot be null for update.");
+        }   
+
+        log.info("Updating Category with id: {}", id);
+        categoryRepository.findById(id).ifPresent(category -> {
+            category.setCategoryName(categoryDto.categoryName());
+            categoryRepository.save(category);
+        });
+        return getCategoryById(id);
+    }
+
 }

@@ -64,4 +64,27 @@ public class JokeService {
         jokeRepository.deleteById(id);
     }
 
+    public JokeDto updateJoke(Long id, JokeDto jokeDto) {
+        log.info("Updating Joke with id: {}", id);
+        if(!jokeRepository.existsById(id)) {
+            throw new RuntimeException("Joke not found with id: " + id);
+        }
+
+        jokeRepository.findById(id).ifPresent(joke -> {
+            joke.setJokeContent(jokeDto.jokeContent());
+            joke.setJokeAnswer(jokeDto.jokeAnswer());
+            // Update category if needed
+            if (jokeDto.category() != null) {
+                Category category = categoryRepository.findById(jokeDto.category().id())
+                    .orElseThrow(() -> new RuntimeException("Category not found with id: " + jokeDto.category().id()));
+                joke.setCategory(category);
+            }
+            jokeRepository.save(joke);
+            
+        });
+        
+        return getJokeDtoById(id);
+
+    }
+
 }
