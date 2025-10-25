@@ -53,6 +53,12 @@ public class JokeController {
     }
 
     @ResponseStatus(HttpStatus.OK)
+    @GetMapping(value="/{id}", produces = APPLICATION_JSON_VALUE)
+    public JokeDto findJokeById(@PathVariable("id") Long id) {
+        return jokeService.getJokeDtoById(id);
+    }
+
+    @ResponseStatus(HttpStatus.OK)
     @PutMapping(value="/{id}", consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
     public JokeDto updateJoke(@PathVariable("id") Long id, @RequestBody JokeDto jokeDto) {
         return jokeService.updateJoke(id, jokeDto);
