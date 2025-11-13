@@ -31,9 +31,22 @@ class JokeApplicationTests {
     public void setUp() {
         jokeRepository.deleteAll();
         categoryRepository.deleteAll();
+
         Category category = new Category();
         category.setCategoryName("General");
         categoryRepository.save(category);
+
+        Joke joke1 = new Joke();
+        joke1.setJokeContent("jokeContent1");
+        joke1.setJokeAnswer("jokeAnswer1");
+        joke1.setCategory(category);
+        jokeRepository.save(joke1);
+
+        Joke joke2 = new Joke();
+        joke2.setJokeContent("jokeContent2");
+        joke2.setJokeAnswer("jokeAnswer2");
+        joke2.setCategory(category);
+        jokeRepository.save(joke2);
     }
 
     @Test
@@ -46,66 +59,37 @@ class JokeApplicationTests {
         JokeDto jokeDto = JokeMapper.toDto(joke);
         jokeService.saveJoke(jokeDto);
 
-        Optional<Joke> retrievedJoke = jokeRepository.findById(jokeRepository.findAll().get(0).getId());
+        Optional<Joke> retrievedJoke = jokeRepository.findById(jokeRepository.findAll().get(2).getId());
         assertTrue(retrievedJoke.isPresent());
         assertEquals("jokeContent", retrievedJoke.get().getJokeContent());
         assertEquals("jokeAnswer", retrievedJoke.get().getJokeAnswer());
     }
 
-	@Test
-	public void testListAllJokes() {
-        Joke joke1 = new Joke();
-        joke1.setJokeContent("jokeContent1");
-        joke1.setJokeAnswer("jokeAnswer1");
-        Category category = categoryRepository.findAll().get(0);
-        joke1.setCategory(category);
-        jokeRepository.save(joke1);
-
-        Joke joke2 = new Joke();
-        joke2.setJokeContent("jokeContent2");
-        joke2.setJokeAnswer("jokeAnswer2");
-        joke2.setCategory(category);
-        jokeRepository.save(joke2);
-
+    @Test
+    public void testListAllJokes() {
         assertEquals(2, jokeService.listJokes().size());
     }
 
     @Test
     public void testFindJokeById() {
-        Joke joke = new Joke();
-        joke.setJokeContent("jokeContent");
-        joke.setJokeAnswer("jokeAnswer");
-        Category category = categoryRepository.findAll().get(0);
-        joke.setCategory(category);
-        jokeRepository.save(joke);
+        Joke joke = jokeRepository.findAll().get(0);
         JokeDto retrievedJoke = jokeService.getJokeDtoById(joke.getId());
         assertTrue(retrievedJoke != null);
-        assertEquals("jokeContent", retrievedJoke.jokeContent());
-        assertEquals("jokeAnswer", retrievedJoke.jokeAnswer());
+        assertEquals("jokeContent1", retrievedJoke.jokeContent());
+        assertEquals("jokeAnswer1", retrievedJoke.jokeAnswer());
     }
 
     @Test
     public void testDeleteJoke() {
-        Joke joke = new Joke();
-        joke.setJokeContent("jokeContent");
-        joke.setJokeAnswer("jokeAnswer");
-        Category category = categoryRepository.findAll().get(0);
-        joke.setCategory(category);
-        jokeRepository.save(joke);
-        Long jokeId = joke.getId();
-        jokeRepository.deleteById(jokeId);
-        Optional<Joke> retrievedJoke = jokeRepository.findById(jokeId);
+        Joke joke = jokeRepository.findAll().get(0);
+        jokeService.deleteJoke(joke.getId());
+        Optional<Joke> retrievedJoke = jokeRepository.findById(joke.getId());
         assertTrue(retrievedJoke.isEmpty());
     }
 
     @Test
     public void testUpdateJoke() {
-        Joke joke = new Joke();
-        joke.setJokeContent("jokeContent");
-        joke.setJokeAnswer("jokeAnswer");
-        Category category = categoryRepository.findAll().get(0);
-        joke.setCategory(category);
-        jokeRepository.save(joke);
+        Joke joke = jokeRepository.findAll().get(0);
         Long jokeId = joke.getId();
         joke.setJokeContent("updatedContent");
         joke.setJokeAnswer("updatedAnswer");
@@ -118,19 +102,6 @@ class JokeApplicationTests {
 
     @Test
     public void testGetRandomJoke() {
-        Joke joke1 = new Joke();
-        joke1.setJokeContent("jokeContent1");
-        joke1.setJokeAnswer("jokeAnswer1");
-        Category category = categoryRepository.findAll().get(0);
-        joke1.setCategory(category);
-        jokeRepository.save(joke1);
-
-        Joke joke2 = new Joke();
-        joke2.setJokeContent("jokeContent2");
-        joke2.setJokeAnswer("jokeAnswer2");
-        joke2.setCategory(category);
-        jokeRepository.save(joke2);
-
         JokeDto randomJoke = jokeService.getRandomJoke();
         assertTrue(randomJoke != null);
         assertTrue(randomJoke.jokeContent().equals("jokeContent1") || randomJoke.jokeContent().equals("jokeContent2"));

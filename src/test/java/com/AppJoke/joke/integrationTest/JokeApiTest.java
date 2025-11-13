@@ -37,6 +37,7 @@ public class JokeApiTest {
     public void setUp() {
         jokeRepository.deleteAll();
         categoryRepository.deleteAll();
+
         Category category = new Category();
         category.setCategoryName("General");
         categoryRepository.save(category);
@@ -67,9 +68,9 @@ public class JokeApiTest {
                 .andExpect(status().isOk())
                 .andExpect(content().contentType("application/json"))
                 .andExpect(content().json("["
-                        + "{\"id\":1,\"jokeContent\":\"jokeContent1\",\"jokeAnswer\":\"jokeAnswer1\",\"category\":{\"id\":1,\"categoryName\":\"General\"}},"
-                        + "{\"id\":2,\"jokeContent\":\"jokeContent2\",\"jokeAnswer\":\"jokeAnswer2\",\"category\":{\"id\":1,\"categoryName\":\"General\"}},"
-                        + "{\"id\":3,\"jokeContent\":\"Old Content\",\"jokeAnswer\":\"Old Answer\",\"category\":{\"id\":1,\"categoryName\":\"General\"}}"
+                        + "{\"id\":" + jokeRepository.findAll().get(0).getId() + ",\"jokeContent\":\"jokeContent1\",\"jokeAnswer\":\"jokeAnswer1\",\"category\":{\"id\":" + categoryRepository.findAll().get(0).getId() + ",\"categoryName\":\"General\"}},"
+                        + "{\"id\":" + jokeRepository.findAll().get(1).getId() + ",\"jokeContent\":\"jokeContent2\",\"jokeAnswer\":\"jokeAnswer2\",\"category\":{\"id\":" + categoryRepository.findAll().get(0).getId() + ",\"categoryName\":\"General\"}},"
+                        + "{\"id\":" + jokeRepository.findAll().get(2).getId() + ",\"jokeContent\":\"Old Content\",\"jokeAnswer\":\"Old Answer\",\"category\":{\"id\":" + categoryRepository.findAll().get(0).getId() + ",\"categoryName\":\"General\"}}"
                         + "]"));
     }
 
@@ -92,13 +93,6 @@ public class JokeApiTest {
 
     @Test
     public void testDeleteJoke() throws Exception {
-        Joke joke = new Joke();
-        joke.setJokeContent("jokeContent");
-        joke.setJokeAnswer("jokeAnswer");
-        Category category = categoryRepository.findAll().get(0);
-        joke.setCategory(category);
-        jokeRepository.save(joke);
-
         Long jokeId = jokeRepository.findAll().get(0).getId();
 
         mockMvc.perform(org.springframework.test.web.servlet.request.MockMvcRequestBuilders
